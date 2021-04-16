@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>订单支付</title>
+  <meta name="format-detection" content="telephone=no,email=no"/>
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+  <!-- js -->
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery-weui/1.0.1/js/jquery-weui.min.js"></script>
+
+  <style type="text/css">
+    .pay {
+      height: 100%;
+      width: 100%;
+      text-align: center;
+    }
+    .pay img {
+      width: 60%;
+      margin-top: 35%;
+    }
+    .paytext {
+      font-size: 18px;
+      color: #333333;
+    }
+    .buttonGroup {
+      margin-top: 120px
+    }
+    .button {
+      width: 30%;
+      border-radius: 30px;
+      background-color: #47b34e;
+      color: #ffffff;
+      padding: 10px 30px;
+    }
+    .continueToPay {
+      margin-right: 10px;
+    }
+    .toDetail {
+      margin-left: 10px;
+      color: #47b34e;
+      border: 1px solid #dadada;
+      background-color: #f8f8f8;
+    }
+  </style>
+</head>
+<body>
+<div class="pay">
+    <img src="../images/unfinished.png" />
+    <p class="paytext">您的订单未完成支付</p>
+    <div class="buttonGroup">
+      <span class="button continueToPay">继续支付</span>
+      <span class="button toDetail">查看订单</span>
+    </div>
+  </div>
+</div>
+</body>
+<script src="https://imapi.icbc.com.cn/icbc/jsrel1.0.10.js"></script>
+<script>
+
+  function getParams(name) {
+    var reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
+    var r = window.location.search.substr(1).match(reg)
+
+    if (r != null) {
+      return unescape(r[2])
+    }
+
+    return null
+  }
+
+  var token = getParams('token')
+  $.ajax({
+    url: "https://yhcsxtest.yonghui.cn/wchat/wap/buyer/icbc.initConfig",
+    headers: {
+      "login-token": token,
+      'content-type': 'application/json',
+    },
+    type: "POST",
+    data: {
+      url: location.protocol + '//' + location.host + location.pathname + location.search
+    },
+    dataType: "json",
+    beforSend: function () {
+      // 禁用按钮防止重复提交
+      $.showLoading("正在处理...");
+    },
+    complete: function (msg) {
+      //请求完成后调用的回调函数（请求成功或失败时均调用）
+      $.hideLoading();
+    },
+    error: function (msg) {
+      //请求失败时被调用的函数
+      $.alert("请求超时", 'cancel');
+    },
+    success: function (json) {
+      var data = json.data
+      rel.init({
+        appid: data.appid, // 必填，公众号的唯一标识
+        timestamp:data.timestamp , // 必填，生成签名的时间戳(基于1970年1月1日0点0分0秒偏移的13位的毫秒数)
+        nonceStr: data.nonceStr, // 必填，生成签名的随机串
+        signature: data.signature,// 必填，签名，生成签名方法可以参考JSAPI-附录1 JSAPI使用权限签名算法
+        debug: ""
+      })
+      rel.error(function(res){
+        alert("init初始化失败,请稍后重试!")
+      });
+
+      rel.ready(function () {
+        // init信息验证后会执行ready方法，所有接口调用都必须在init接口获得结果之后，init是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
+        // alert("ok");
+        jsApiCall()
+      });
+    }
+  });
+</script>
+<script>
+   $(".continueToPay").on("click", function () {
+       jsApiCall()
+   });
+   $(".toDetail").on("click", function () {
+    var backUrl = getParams('backUrl'),
+     orderId = getParams('orderId'),
+     state = getParams('state').split('fen')[0]
+     var totleUrl = backUrl + "&state=" + state + "fenufenorderdetailfen" + orderId
+//        alert("totleUrl====" + totleUrl)
+     location.replace(totleUrl)
+   });
+  //调用JS api 支付
+  function jsApiCall() {
+    //获取remark
+    var orderId = getParams('orderId')
+    var token = getParams('token')
+    var body = new FormData()
+    body.append("orderId", orderId)
+    body.append("url", location.protocol + '//' + location.host + location.pathname + location.search)
+    console.log(orderId)
+    $.ajax({
+      url: "https://yhcsxtest.yonghui.cn/wchat/wap/buyer/icbcPayByOrderId",
+      headers: {
+        "login-token": token
+      },
+      contentType: false, // 注意这里应设为false
+      processData: false,
+      type: "POST",
+      data: body,
+      beforSend: function () {
+        // 禁用按钮防止重复提交
+      },
+      complete: function (msg) {
+        //请求完成后调用的回调函数（请求成功或失败时均调用）
+        $.hideLoading();
+      },
+      error: function (msg) {
+        //请求失败时被调用的函数
+        $.alert("请求超时", 'cancel');
+      },
+      success: function (msg) {
+        if (!msg.success) {
+          window.history.back()
+        }
+        var data = msg.data
+        var  payParams = {
+          appid: data.appid,   // 必填，公众号的唯一标识
+          timestamp: data.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          orderid: data.orderId,  //必填，订单id
+          totalFee: data.totalFee,  //必填，支付金额(分)
+          channelAppNo: data.channelAppNo,  //非必填，渠道应用编号
+          // channelAppNo: "",  //非必填，渠道应用编号
+          remark:data.remark, //非必填,商户备注字段
+          // remark:"", //非必填,商户备注字段
+          signature: data.signature,  // 必填，签名，
+          nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
+        }
+        // alert("icbcPayByOrderId___success")
+        callpayJs(payParams);
+
+      }
+    });
+  }
+
+//  var u = navigator.userAgent;
+//  var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+//  var isiPhone = u.indexOf('iPhone') > -1
+//  var isiPad = u.indexOf('iPad') > -1
+
+  function callpayJs(payParams) {
+//    alert("startChooseRELPay")
+    window.backUrl = getParams('backUrl')
+    window.orderId = getParams('orderId')
+    window.from = getParams('from')
+    window.state = getParams('state').split('fen')[0]
+//    if (isiOS || isiPhone || isiPad) {
+//      window.timeSet = setTimeout(function () {
+//        var totleUrl = window.backUrl + "&state=" + window.state + "fenufenorderdetailfen" + window.orderId
+//      location.replace(totleUrl)
+//      }, 60000)
+//    }
+//    setTimeout(function () {
+//      var totleUrl = window.backUrl + "&state=" + window.state + "fenufenorderdetailfen" + window.orderId
+//      location.replace(totleUrl)
+//    }, 3000)
+    rel.chooseRELPay({
+      appid: payParams.appid, // 必填，公众号的唯一标识
+      timestamp: payParams.timestamp, // 必填，生成支付签名的时间戳(基于1970年1月1日0点0分0秒偏移的13位的毫秒数)
+      orderid: payParams.orderid,//必填，订单id
+      totalFee: payParams.totalFee,//必填，支付金额(分)
+      nonceStr: payParams.nonceStr, // 必填，生成支付签名的随机串
+      channelAppNo: payParams.channelAppNo,//非必填,渠道应用编号
+      remark: payParams.remark,//必填,备注信息
+      signature: payParams.signature,// 必填，签名,生成签名方法可以参考支付(订单)管理-附录2 JSAPI支付使用签名算法
+      success: function (res) {
+        var totleUrl
+        if (res.errMsg == "chooseRELPay:ok") {
+//          alert("支付成功")
+          totleUrl = window.backUrl + "&state=" + window.state + "fensuccessfen" + window.orderId + "?from=" + window.from
+//          alert("totleUrl====" + totleUrl)
+//          clearTimeout(window.timeSet)
+          location.replace(totleUrl)
+        } else {
+          // alert("successXXXXXXXXX======>>>" + res.errMsg)
+
+          totleUrl = window.backUrl + "&state=" + window.state + "fenufenorderdetailfen" + window.orderId
+//          alert("totleUrl====" + totleUrl)
+          location.replace(totleUrl)
+        }
+      },
+      failed: function (res) {
+//        try{
+//        alert("chooseRELPay  failed ")
+        var totleUrl = window.backUrl + "&state=" + window.state + "fenufenorderdetailfen" + window.orderId
+//        alert("totleUrl====" + totleUrl)
+        location.replace(totleUrl)
+//        }catch (e){
+//          alert("error==" + e)
+//        }
+      },
+      complete: function(res){
+//        alert("chooseRELPay  complete ")
+        var totleUrl = window.backUrl + "&state=" + window.state + "fenufenorderdetailfen" + window.orderId
+//        alert("totleUrl====" + totleUrl)
+        location.replace(totleUrl)
+      },
+      cancel: function (res) {
+//        try {
+//        alert("chooseRELPay  cancel ")
+        var totleUrl = window.backUrl + "&state=" + window.state + "fenufenorderdetailfen" + window.orderId
+//        alert("totleUrl====" + totleUrl)
+        location.replace(totleUrl)
+//        }catch (e){
+//          alert("cancel==error=====" + e)
+//        }
+      }
+    })
+  }
+
+
+</script>
+</html>
