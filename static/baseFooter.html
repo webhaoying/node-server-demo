@@ -1,0 +1,145 @@
+<div class="footer " ng-controller="baseFooter">
+  <div ng-show="showBack" class="backTop hidden-xs" ng-click="scrollToTop()">
+
+  </div>
+  <div class="text-center bottom" >
+    <p>
+      永辉彩食鲜发展有限公司　<a class="link" href="http://www.beian.miit.gov.cn" target="_blank">闽ICP备19014477号</a>
+      <span style="width:300px;margin:0 auto; ">
+        <a class="link link_right national_emblem_box" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010602007029" target="_blank">
+          <img class="link national_emblem" src="/img/icp.png" style="height:20px; width:20px; float: none;"/>
+          <span style="display:inline-block; height:20px;line-height:20px;margin: 0px 0px 0px 0px; color:#333;">京公网安备 11010602007029号</span >
+        </a>
+     </span>
+      <a class="link link_right" href="http://blog.freshfood.cn/" target="_blank">彩食鲜技术博客</a>
+      
+    </p> 
+  </div>
+  
+  </div>
+
+
+</div>
+<style>
+  .link{
+    color: #333;
+  }
+  /* 未访问的链接   已访问的链接   鼠标在链接上   点击激活链接——在你点击该链接之后，页面正在转向新地址的时候，链接显示此颜色；当你已经到了要链接的页面，然后再返回，原页面上的此链接仍是此颜色*/
+  .link:link, .link:visited, .link:hover, .link:active{
+    color: #333;
+    text-decoration: none;
+  }
+  .link_right{
+    margin-left: 10px;
+  }
+  .national_emblem_box img.national_emblem{
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 3px;
+}
+  @media screen and (min-width: 1600px) {
+    .footer .backTop {
+      position: fixed;
+      z-index: 100;
+      width: 70px;
+      cursor: pointer;
+      height: 56px;
+      right: 100px;
+      bottom: 120px;
+      background-image: url("/img/backTop.png");
+      background-size: 100% 100%;
+    }
+
+    .footer .backTop:hover {
+      background-image: url("/img/backTopH.png");
+    }
+
+    .footer .logo {
+      height: 100px;
+      background-color: #000;
+    }
+
+    .footer img {
+      width: 441px;
+      float: right;
+      margin-right: 70px;
+      margin-top: 20px;
+    }
+    .bottom{
+      font-size: 12px;
+      height: 100px;
+      line-height: 100px;
+      background-color: #fff;
+      border-top: 1px solid #333;
+    }
+  }
+  @media screen and (min-width: 992px) and (max-width: 1600px) {
+    .footer .backTop {
+      position: fixed;
+      z-index: 100;
+      width: 56px;
+      cursor: pointer;
+      height: 44.8px;
+      right: 80px;
+      bottom: 120px;
+      background-image: url("./img/backTop.png");
+      background-size: 100% 100%;
+    }
+
+    .footer .backTop:hover {
+      background-image: url("./img/backTopH.png");
+    }
+
+    .footer .logo {
+      height: 80px;
+      background-color: #000;
+    }
+
+    .footer img {
+      width: 352px;
+      float: right;
+      margin-right: 56px;
+      margin-top: 16px;
+    }
+    .bottom{
+      font-size: 12px;
+      height: 80px;
+      line-height: 80px;
+      background-color: #fff;
+      border-top: 1px solid #333;
+    }
+  }
+  @media screen and (max-width: 992px) {
+    .footer .backTop{
+      position: fixed;
+      z-index: 100;
+      width: 70px;
+      cursor: pointer;
+      height: 56px;
+      right:100px ;
+      bottom: 120px;
+      background-image: url("./img/backTop.png");
+      background-size: 100% 100%;
+    }
+    .footer .backTop:hover{
+      background-image: url("./img/backTopH.png");
+    }
+    .footer .logo{
+      height: .5rem;
+      padding: .12rem;
+      background-color: #000;
+    }
+    .footer img{
+      width: 2.20rem;
+      display: block;
+      margin: 0 auto;
+    }
+    .bottom{
+      font-size: .08rem;
+      height: .5rem;
+      line-height: .5rem;
+      background-color: #fff;
+      border-top: 1px solid #333;
+    }
+  }
+</style>

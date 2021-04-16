@@ -1,0 +1,543 @@
+<head><meta charset=utf-8><title>Server Manual - YH</title></head>
+<body style='background:#ddd;margin-top:0px'><div style='height:5px'></div><a name='top'><table style='width:100%;padding:5px;background:#fff;'><tr><td><div style='font-size:24px;margin-top:0px'>Server Manual</div>
+<div style='height:10px'></div><a href='#chat' style='font-size:18px'>collection: chat</a> <span style='color:#000;font-style:italic;font-size:12px'>personal two-party conversation header structure</span><br>
+<a href='#geotest' style='font-size:18px'>collection: geotest</a> <span style='color:#000;font-style:italic;font-size:12px'>MongoDB geo location based algorithms test</span><br>
+<a href='#group' style='font-size:18px'>collection: group</a> <span style='color:#000;font-style:italic;font-size:12px'>group conversation header structure, more than 2 person</span><br>
+<a href='#mailbox' style='font-size:18px'>collection: mailbox</a> <span style='color:#000;font-style:italic;font-size:12px'>user mailbox, message center, in coming and out going message list</span><br>
+<a href='#messages_block' style='font-size:18px'>collection: messages_block</a> <span style='color:#000;font-style:italic;font-size:12px'>message entries block record, conversation messages are divided into chained blocks</span><br>
+<a href='#person' style='font-size:18px'>collection: person</a> <span style='color:#000;font-style:italic;font-size:12px'>user record, store personal information other than account information</span><br>
+<div style='height:10px'></div><a href='#group:join' style='font-size:18px'>group join</a> <span style='color:#000;font-style:italic;font-size:12px'>join a group, for demo, join the first group if unspecified, and create it if necessary</span><br>
+<div style='height:10px'></div><a href='#message:chat_get' style='font-size:18px'>message chat_get</a> <span style='color:#000;font-style:italic;font-size:12px'>retrieve personal chat, get a list of chat content entries</span><br>
+<a href='#message:chat_send' style='font-size:18px'>message chat_send</a> <span style='color:#000;font-style:italic;font-size:12px'>personal chat send. Client calls this api to send a message to the other party</span><br>
+<a href='#message:group_get' style='font-size:18px'>message group_get</a> <span style='color:#000;font-style:italic;font-size:12px'>retrieve group messages, get a list of group message content entries</span><br>
+<a href='#message:group_send' style='font-size:18px'>message group_send</a> <span style='color:#000;font-style:italic;font-size:12px'>group message send. Client calls this api to send a message to a group</span><br>
+<a href='#message:mailbox' style='font-size:18px'>message mailbox</a> <span style='color:#000;font-style:italic;font-size:12px'>retrieve list of received and outgoing messages on user message center</span><br>
+<div style='height:10px'></div><a href='#person:chksess' style='font-size:18px'>person chksess</a> <span style='color:#000;font-style:italic;font-size:12px'>check session is still valid, normally this api is called by third party applications</span><br>
+<a href='#person:get' style='font-size:18px'>person get</a> <span style='color:#000;font-style:italic;font-size:12px'>get pid of another person by login_name</span><br>
+<a href='#person:login' style='font-size:18px'>person login</a> <span style='color:#000;font-style:italic;font-size:12px'>person log into system</span><br>
+<a href='#person:logout' style='font-size:18px'>person logout</a> <span style='color:#000;font-style:italic;font-size:12px'>log out of system</span><br>
+<a href='#person:qr_get' style='font-size:18px'>person qr_get</a> <span style='color:#000;font-style:italic;font-size:12px'>get the connection id to display on QR code login screen, normally called by webapp</span><br>
+<a href='#person:qr_login' style='font-size:18px'>person qr_login</a> <span style='color:#000;font-style:italic;font-size:12px'>log in webapp by scanning QR code displayed on the webapp with mobile device</span><br>
+<a href='#person:register' style='font-size:18px'>person register</a> <span style='color:#000;font-style:italic;font-size:12px'>register an account</span><br>
+<div style='height:10px'></div><a href='#push:message_chat' style='font-size:18px'>push message_chat</a> <span style='color:#000;font-style:italic;font-size:12px'>push notification: personal chat message received</span><br>
+<a href='#push:message_group' style='font-size:18px'>push message_group</a> <span style='color:#000;font-style:italic;font-size:12px'>push notification: group message received</span><br>
+<div style='height:10px'></div><a href='#server:info' style='font-size:18px'>server info</a> <span style='color:#000;font-style:italic;font-size:12px'>system configuration data, all configuration data are stored on server</span><br>
+<div style='height:10px'></div><a href='#test:apns' style='font-size:18px'>test apns</a> <span style='color:#000;font-style:italic;font-size:12px'>test Apple push notification</span><br>
+<a href='#test:apnsfb' style='font-size:18px'>test apnsfb</a> <span style='color:#000;font-style:italic;font-size:12px'>Apple push notification feedback service</span><br>
+<a href='#test:echo' style='font-size:18px'>test echo</a> <span style='color:#000;font-style:italic;font-size:12px'>Test server API call</span><br>
+<a href='#test:geo' style='font-size:18px'>test geo</a> <span style='color:#000;font-style:italic;font-size:12px'>MongoDB geo location LBS algorithm test</span><br>
+</td></tr></table><div style='height:20px'></div><a name='chat'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'>collection: <b>chat</b> <span style='color:#000;font-style:italic;font-size:12px'>personal two-party conversation header structure</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>    
+    // "chat" in this app is meant for two-party private personal conversation only.
+    // Other forms of conversation, group conversation, conversation under certain topics
+    // all have similar header structure storing group/topic data, participants, assets, members etc.
+    // And each member shall have list of conversation header ids that they are part of.
+    
+    // Ordered two person ids. Use two ids to look up the header structure
+    pair: "id1.id2"
+	
+	//title: // specially handled in code
+	//avatar_fid: // specially handled in code
+    
+    // Instead of each person storing header object id, paired person ids of counter party and self 
+    // are good enough to locate the chat record.
+
+    // Required field for all conversation header structure.
+    block_id: last message entries block record id, for new chat, this fields is set to 0
+	
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>man_ds_chat (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='geotest'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'>collection: <b>geotest</b> <span style='color:#000;font-style:italic;font-size:12px'>MongoDB geo location based algorithms test</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    "loc": {
+        "type": "Point",
+        "coordinates": [
+            -73.97,
+            40.77
+        ]
+    },
+    
+    "name": "Central Park",
+    "category": "Parks"
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>man_ds_geotest (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='group'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'>collection: <b>group</b> <span style='color:#000;font-style:italic;font-size:12px'>group conversation header structure, more than 2 person</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>    
+    // person ids. 
+    members:{
+		pid1 => 1,
+		pid2 => 1,
+	}
+    
+	title: // group title, subject, name
+	avatar_fid: // group logo
+	
+    // Instead of each person storing header object id, paired person ids of counter party and self 
+    // are good enough to locate the chat record.
+
+    // Required field for all conversation header structure.
+    block_id: last message entries block record id, for new chat, this fields is set to 0
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>man_ds_group (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='mailbox'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'>collection: <b>mailbox</b> <span style='color:#000;font-style:italic;font-size:12px'>user mailbox, message center, in coming and out going message list</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    // id of this record reuses owner's person id
+    // cache the last record for each type of conversation.
+    // For most of the push, there shall be a record here for user 
+    // later viewing purpose just in case user misses the push notification.
+
+    ut: // mailbox update time
+
+    // store the last message, and new message count for each type of message
+    messages: {
+    
+        id1: {  // conversation header id
+
+            htype: chat/topic/group  // conversation header type
+            // two party chat (private) or group conversion (not yet implemented)
+
+            hid: same as id1
+            ut: unix time, last update time
+            vt: unix time, last visit time
+            count: unread new message count under id1
+            block: block_record ID for id1
+            title: title, subject, group name or private chat party name
+			
+			// cache the last entry to display on message center message list
+            last_user: last user name
+            last_content: last message content
+            last_avatar: user avatar
+        }
+    }
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>man_ds_mailbox (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='messages_block'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'>collection: <b>messages_block</b> <span style='color:#000;font-style:italic;font-size:12px'>message entries block record, conversation messages are divided into chained blocks</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    // next message entries block id. 0 if this is the first block
+    // conversation header structure contains the latest block
+    next_id: 0
+
+    et: entry time, when this block was first created
+    ut: update time, last time when this block was updated
+   
+    // Conversation entries block contains 50 entries max.
+    // All the new entries will be placed on an additional new blocks.
+
+    entries: [
+    {
+        from_id:     sender id
+        from_name:   sender name
+        mtype:       text/image/voice/link ...  // message entry type
+        content:     content, text, file id, link address etc.
+        send_time:   timestamp
+    },
+    {
+        from_id:     sender id
+        from_name:   sender name
+        mtype:       text/image/voice/link ...
+        content:     content, text, file id, link address etc.
+        send_time:   timestamp
+    }
+    ]
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>man_ds_messages_block (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'>collection: <b>person</b> <span style='color:#000;font-style:italic;font-size:12px'>user record, store personal information other than account information</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    display_name:123
+    
+    devicetoken: unique device id
+    devicetype: unique device type, android/ios ...
+    
+	name:
+	avatar_fid:
+	
+    // user personal record update time and entry time
+    ut: update time
+    et: entry time
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>man_ds_person (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='group:join'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>group join</b> <span style='color:#000;font-style:italic;font-size:12px'>join a group, for demo, join the first group if unspecified, and create it if necessary</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    header_id":"o14489513231729540824"   // group record id
+	
+OUTPUT:
+    header_id: "o14489513231729540824",      // group record id
+    
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_group_join (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='message:chat_get'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>message chat_get</b> <span style='color:#000;font-style:italic;font-size:12px'>retrieve personal chat, get a list of chat content entries</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    header_id: // the other party id, get the first block
+    block_id: // OR: to request next block of chat entries, use the block id from the last block record
+
+OUTPUT:
+    block: {
+        _id: "o14489513231757400035", 
+        next_id: 0,
+        
+        entries: [
+        
+        {
+            content:    "Hello?",                    // message content
+            from_name:  "Tom",                       // sender name
+            from_avatar:"f14477630553830869196",     // sender avatar
+            send_time:  1448955461,                  // send timestamp
+            sender_pid: "o14477397324317851066",     // sender pid
+            mtype:      "text"                       // message type: text/image/voice/link/file
+        },
+        
+        {
+            content:    "Hi, whats up", 
+            from_name:  "Smith",
+            from_avatar:"f14477630553830869190", 
+            send_time:  1448955486, 
+            sender_pid: "o14477630553830869197", 
+            mtype:      "text"
+        },
+        
+        {
+            content:    "Jane", 
+            from_avatar: "f14477630553830869192", 
+            send_time:  1448956085, 
+            sender_pid: "o14477397324317851066", 
+            mtype:      "text"
+        }
+        
+        ],
+        
+        type: "messages_block"
+    }
+    
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_message_chat_get (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='message:chat_send'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>message chat_send</b> <span style='color:#000;font-style:italic;font-size:12px'>personal chat send. Client calls this api to send a message to the other party</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    header_id":  "o14489513231729540824"   // to_id, person id of the other party (chat_id not used!)
+	
+    mtype:       "text",                   // message type: text/image/voice/link/file
+    content:     "Hello"                   // message content text, link, etc.
+		// mtype == image
+		// content == {
+		//		fid: larger image, return from upload.pl
+		//		thumb: smaller image, return from upload.pl
+		//		type: mime type, png/jpg/gif .. optional
+		
+OUTPUT:
+    header_id: "o14489513231729540824",      // chat record id
+    
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_message_chat_send (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='message:group_get'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>message group_get</b> <span style='color:#000;font-style:italic;font-size:12px'>retrieve group messages, get a list of group message content entries</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    header_id: // group id, get the first block
+    block_id: // OR: to request next block of chat entries, use the block id from the last block record
+
+OUTPUT:
+    block: {
+        _id: "o14489513231757400035", 
+        next_id: 0,
+        
+        entries: [
+        
+        {
+            content:    "Hello?",                    // message content
+            from_name:  "Tom",                       // sender name
+            from_avatar:"f14477630553830869196",     // sender avatar
+            send_time:  1448955461,                  // send timestamp
+            sender_pid: "o14477397324317851066",     // sender pid
+            mtype:      "text"                       // message type: text/image/voice/link/file
+        },
+        
+        {
+            content:    "Hi, whats up", 
+            from_name:  "Smith",
+            from_avatar:"f14477630553830869190", 
+            send_time:  1448955486, 
+            sender_pid: "o14477630553830869197", 
+            mtype:      "text"
+        },
+        
+        {
+            content:    "Jane", 
+            from_avatar: "f14477630553830869192", 
+            send_time:  1448956085, 
+            sender_pid: "o14477397324317851066", 
+            mtype:      "text"
+        }
+        
+        ],
+        
+        type: "messages_block"
+    }
+    
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_message_group_get (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='message:group_send'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>message group_send</b> <span style='color:#000;font-style:italic;font-size:12px'>group message send. Client calls this api to send a message to a group</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    header_id":"o14489513231729540824"   // group record id
+	
+    mtype:       "text",                   // message type: text/image/voice/link/file
+    content:     "Hello"                   // message content text, link, etc.
+		// mtype == image
+		// content == {
+		//		fid: larger image, return from upload.pl
+		//		thumb: smaller image, return from upload.pl
+		//		type: mime type, png/jpg/gif .. optional
+		
+
+OUTPUT:
+    header_id: "o14489513231729540824",      // group record id
+    
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_message_group_send (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='message:mailbox'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>message mailbox</b> <span style='color:#000;font-style:italic;font-size:12px'>retrieve list of received and outgoing messages on user message center</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    ut: // client cache the returned list, timestamp of lass call
+
+OUTPUT:
+    changed: 0/1     // check against input valur ut, and set 1 if any new messages
+    ut: unix time    // last update timestamp
+    
+    mailbox: [
+    
+    {
+        htype:       "group" // conversation header type
+        hid:          "o14613657119255800247", 
+        ut:          1462579955, 
+        vt:          1462579955, 
+        count:       0, 
+        block:       0, 
+		
+        title:       "Class 2000 Reunion Group", 
+        avatar_fid:  "f14605622061056489944001", 
+
+        last_avatar: "f14605622061056489944001", 
+        last_content:"Hello everyone!", 
+        last_name:   "John", 
+    },
+    
+    {
+        htype:       "chat" // conversation header type
+        hid:          "o14589256603505270481", 
+        ut:          1462583109, 
+        vt:          1462583111, 
+        count:       0, 
+        block:       "o14625831090064589977", 
+		
+        title:       "Smith", 
+        avatar_fid:  "f14605622061056489944001", 
+
+        last_avatar: "f14605622061056489944001", 
+        last_content:"Message Two", 
+        last_name:   "Smith", 
+    }
+    
+    ]
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_message_mailbox (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person:chksess'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>person chksess</b> <span style='color:#000;font-style:italic;font-size:12px'>check session is still valid, normally this api is called by third party applications</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_person_chksess (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person:get'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>person get</b> <span style='color:#000;font-style:italic;font-size:12px'>get pid of another person by login_name</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+	login_name:
+
+OUTPUT:
+	pid:
+	avatar_fid:
+	name:
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_person_get (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person:login'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>person login</b> <span style='color:#000;font-style:italic;font-size:12px'>person log into system</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    // normal login with these two fields
+    login_name: abc login name
+    login_passwd: asc login password
+    
+    // extended login (loginx) with complex credentail data
+    credential_data/0:{
+        
+        // [1] normal credentail data
+        ctype: normal
+        login_name: login name
+        login_passwd: login password
+    
+        // [2] oauth2 credential data
+        ctype: oauth2
+        authorization_code: token from oauth api calls
+    
+        // [3] unique device id as credential data
+        device_id: // mobile device ID, unique id
+        ctype: device
+        devicetoken: Apple device token
+    
+    }
+    
+    verbose/0: 0/1 if set to 1, return user_info and server_info
+    // verbose: 1 - used for initial login; 0 - used to maintain connection when extra information not needed.
+
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_person_login (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person:logout'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>person logout</b> <span style='color:#000;font-style:italic;font-size:12px'>log out of system</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'></pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_person_logout (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person:qr_get'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>person qr_get</b> <span style='color:#000;font-style:italic;font-size:12px'>get the connection id to display on QR code login screen, normally called by webapp</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+OUTPUT:
+    conn: // connection id
+
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_person_qr_get (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person:qr_login'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>person qr_login</b> <span style='color:#000;font-style:italic;font-size:12px'>log in webapp by scanning QR code displayed on the webapp with mobile device</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    conn: // connection id
+
+OUTPUT:
+    count: // how many qr login messages are sent
+
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_person_qr_login (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='person:register'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>person register</b> <span style='color:#000;font-style:italic;font-size:12px'>register an account</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+INPUT:
+    display_name: J Smith name // displayed on screen
+    login_name: jsmith // login name, normally a phone number
+    login_passwd: 123 // login password
+ 
+    data:{
+        // other account and personal information
+    }
+
+
+OUTPUT:
+    user_info and server_info for successful registeration, and
+    a valid session id
+
+    server_info: {
+    }
+
+    user_info: {
+    }
+   
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_person_register (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='push:message_chat'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>push message_chat</b> <span style='color:#000;font-style:italic;font-size:12px'>push notification: personal chat message received</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    This is a notification sent from server. Not a callable api by client.
+
+PUSH:
+    obj              // push
+    act              // message_chat
+    mtype            // message type: text/image/voice/link/file ...
+    content          // message content text, link, etc.
+    time
+    from_id          // sender person id
+    from_name        // sender name
+    from_avatar      // sender avatar fid
+	
+	header_id	     // from_id (person id) of this message 
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_push_message_chat (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='push:message_group'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>push message_group</b> <span style='color:#000;font-style:italic;font-size:12px'>push notification: group message received</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    This is a notification sent from server. Not a callable api by client.
+
+PUSH:
+    obj              // push
+    act              // message_group
+    mtype            // message type: text/image/voice/link/file ...
+    content          // message content text, link, etc.
+    time
+    from_id          // sender person id
+    from_name        // sender name
+    from_avatar      // sender avatar fid
+	
+	header_id	     // group id this message belongs to
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_push_message_group (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='server:info'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>server info</b> <span style='color:#000;font-style:italic;font-size:12px'>system configuration data, all configuration data are stored on server</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    Client apps use the configuration received through this interface.
+    This api is called automatically on client SDK initialization.
+
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_server_info (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='test:apns'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>test apns</b> <span style='color:#000;font-style:italic;font-size:12px'>test Apple push notification</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+Xcode simulator app will connect to APNS development server
+and the reported token is not valid for APNS production service.
+
+INPUT:
+    phone: device login name
+
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_test_apns (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='test:apnsfb'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>test apnsfb</b> <span style='color:#000;font-style:italic;font-size:12px'>Apple push notification feedback service</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_test_apnsfb (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='test:echo'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>test echo</b> <span style='color:#000;font-style:italic;font-size:12px'>Test server API call</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>INPUT:
+	data: // string to be echoed back
+OUTPUT
+	echo: // data echoed back
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_test_echo (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><a name='test:geo'><table style='width:100%;padding:5px;background:#fff;'><tr><td style='font-weight:bold;color:#333;font-size:18px'><b>test geo</b> <span style='color:#000;font-style:italic;font-size:12px'>MongoDB geo location LBS algorithm test</span><td><td style='text-align:right;font-size:14px'><a href='#top'>TOP &uarr;</a></td></tr>
+<tr><th colspan=2 style='text-align:left;padding:5px;font-weight:normal;font-size:14px'><pre style='-moz-tab-size:4;-o-tab-size:4;tab-size:4;'>
+    geotest table needs the following index record
+
+    https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/
+    http://search.cpan.org/~mongodb/MongoDB-v1.4.5/lib/MongoDB/Collection.pm
+    
+      my $mocl = mdb()->get_collection("geotest");
+      $mocl->ensure_index({loc=>"2dsphere"});
+    
+    add two records to geotest collection for testing:
+
+    {
+        "_id": "o14732897828623270988",
+        "loc": {
+            "type": "Point",
+            "coordinates": [
+                -73.97,
+                40.77
+            ]
+        },
+        "name": "Central Park",
+        "category": "Parks"
+    }
+
+    {
+        "_id": "o14732897834963579177",
+        "loc": {
+            "type": "Point",
+            "coordinates": [
+                -73.88,
+                40.78
+            ]
+        },
+        "name": "La Guardia Airport",
+        "category": "Airport"
+    }
+    
+    To test, send request:
+
+        {"obj":"geo","act":"test","dist":0.001}
+
+INPUT:
+    dist: rad, 0.01 , 0.001
+
+</pre></th></tr>
+<tr><th colspan=2 style='text-align:left;font-weight:normal;font-style:italic;font-size:14px'>p_test_geo (end) <a href='#top'>top&uarr;</a></th></tr></table>
+<div style='height:20px'></div><div style='height:10px'></div>

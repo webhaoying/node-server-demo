@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>新闻资讯-永辉彩食鲜官网</title>
+    <meta name="keywords" content="新闻资讯">
+    <meta name="description" content="永辉彩食鲜新闻咨询提供永辉彩食鲜最新动态资讯,更多详情请访问永辉彩食鲜官方网站."/>
+    <link rel="shortcut icon" href="./img/icon.ico">
+    <link href="./bootstrap/less/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="baseFooter.css">
+    <link rel="stylesheet" href="common.css">
+    <!--<link rel="stylesheet" href="./css/aos-animation.css">-->
+    <!--<link rel="stylesheet" href="./css/aos.css">-->
+    <link rel="stylesheet" href="./css/fullpage.min.css">
+    <link rel="stylesheet" href="./css/swiper.min.css">
+    <script src="angular.min.js"></script>
+    <script src="angular-route.js"></script>
+    <script src="stacktrace.min.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=G3e7VsRWa1UjG4pAIq959Eqs5hDfHpXc"></script>
+    <script src="APIConnection.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/fullpage.min.js"></script>
+    <script src="js/swiper.min.js"></script>
+    <link href="i103.css" rel="stylesheet">
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="./js/aos.js"></script>
+    <script src="app.js"></script>
+    <script src="header.js"></script>
+    <script src="baseFooter.js"></script>
+    <script src="i103.js"></script>
+    <script src="pageUtil.js"></script>
+    <script src="/baiduUpload.js"></script>
+    <script type="text/javascript">
+        var Head = document.getElementsByTagName('head')[0],style = document.createElement('style');
+        function linkScript(parm, fn) {
+            var linkScript;
+            if(/\.css[^\.]*$/.test(parm)) {
+                linkScript = document.createElement("link");
+                linkScript.type = "text/" + ("css");
+                linkScript.rel = "stylesheet";
+                linkScript.href = parm;
+            } else {
+                linkScript = document.createElement("script");
+                linkScript.type = "text/" + ("javascript");
+                linkScript.src = parm;
+            }
+            Head.insertBefore(linkScript, Head.lastChild)
+            linkScript.onload = linkScript.onerror = function() {
+                if(fn) fn()
+            }
+        }
+        var htmlDc=document.getElementsByTagName('html')[0];
+        setRootSize=function () {
+            if($(window).width()<=992) {
+                var clientWidth = document.documentElement.clientWidth || document.body.clientWidth;
+                var clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+                htmlDc.style.fontSize = clientWidth / 3.75 + 'px';
+                htmlDc.style.minHeight = clientHeight + 'px';
+            }
+        };
+        setRootSize();
+        $(window).resize(function () {
+            setRootSize();
+        })
+        if($(window).width()<=992){
+
+        }else{
+            linkScript('./css/aos-animation.css')
+            linkScript('./css/aos.css')
+        }
+    </script>
+    <script type="text/javascript">
+        // var _hmt = _hmt || [];
+        // (function() {
+        //   var hm = document.createElement("script");
+        //   hm.src = "https://hm.baidu.com/hm.js?ebade967bb1509cfc80729c8e54d71f0";
+        //   var s = document.getElementsByTagName("script")[0];
+        //   s.parentNode.insertBefore(hm, s);
+        // })();
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?ab52f1ae5eb1c7a9e8bcd4373aebc978";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <script type="text/javascript">
+    </script>
+</head>
+
+<body ng-app="iweb" ng-controller="i103">
+    <h1>永辉彩食鲜新闻资讯</h1>
+
+<div class="i103">
+    <div ng-include="'header.html'"></div>
+    <div class="banner" data-ng-style="{'background-image':'url('+staticRootPath+entity.banner+')'}">
+        <!--<img class="bannerImg" ng-src="{{staticRootPath+entity.banner}}" alt="">-->
+        <div class="container">
+            <img src="./img/i103/one1.png" class="label" alt='彩食鲜新闻资讯' />
+        </div>
+    </div>
+    <div class="two">
+        <div class="container">
+            <div ng-if="!detail">
+             
+                <div class="item clearfix" ng-click="goDetail(item['_id'])" ng-repeat="item in news">
+                    <a  class="clearhref" ng-href="/news/{{item._id}}">
+                      <div class="date">
+                          {{item.mon}}.{{item.day}}
+                      </div>
+                      <div class="header">
+                          <img class="more" src="./img/i103/two2.png" alt="新闻资讯详情">
+                      </div>
+                      <div class="body">
+                          <div class="left">
+                              <div class="title">
+                                  {{item.title}}
+                              </div>
+                              <div class="text">
+                                  {{item.description}}
+                              </div>
+                          </div>
+                          <div class="right">
+                              <img ng-src="{{staticRootPath+item.picture}}" alt="彩食鲜新闻配图">
+                          </div>
+                      </div>
+                    </a>
+                </div>
+                <div id="i004page" style="text-align: right"></div>
+                <div class="text">
+                    <p style="font-size: 16px; text-indent: 20px; line-height: 32px">
+                      作为优质的生鲜食材配送平台，永辉彩食鲜有专业买手深入源头生产基地，与农业企业合作共建种植基地，实现产品开发和市场需求的无缝对接，保障高质量运营。彩食鲜积极响应社会号召，参与业界展会及社会公益活动。发展自身的同时，专业的生鲜加工技术与冷链物流也帮助客户保障品质。
+                    </p>
+                </div>
+            </div>
+
+           
+        </div>
+
+
+    </div>
+</div>
+<!-- <div ng-include="'baseFooter.html'"></div> -->
+<div class="footer " ng-controller="baseFooter">
+  <div ng-show="showBack" class="backTop hidden-xs" ng-click="scrollToTop()">
+  </div>
+  <div class="text-center bottom">
+    <p>
+      永辉彩食鲜发展有限公司　<a class="link" href="http://www.beian.miit.gov.cn" target="_blank">闽ICP备19014477号</a>
+      <span style="width:300px;margin:0 auto; ">
+        <a class="link link_right national_emblem_box" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010602007029" target="_blank">
+          <img class="link national_emblem" src="/img/icp.png" style="height:20px; width:20px; float: none;"/>
+          <span style="display:inline-block; height:20px;line-height:20px;margin: 0px 0px 0px 0px; color:#333;">京公网安备 11010602007029号</span >
+        </a>
+     </span>
+      <a class="link link_right" href="http://blog.freshfood.cn/" target="_blank">彩食鲜技术博客</a>
+    </p>
+  </div>
+</div>
+
+</body>
+</html>
